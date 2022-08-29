@@ -37,6 +37,7 @@ def create_dataset(config):
     """
     dataset_module = importlib.import_module('recbole.data.dataset')
     if hasattr(dataset_module, config['model'] + 'Dataset'):
+        # 여기서 이 분기로 들어가야 data를 안불러오나? 
         dataset_class = getattr(dataset_module, config['model'] + 'Dataset')
     else:
         model_type = config['MODEL_TYPE']

@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "Recbole"
+version = "0.1.0"
+description = "requirements for recbole 1.0.0"
+authors = ["jonhyuk0922 <jonhyuk0922@naver.com>"]
+license = "MIT License"
+
+[tool.poetry.dependencies]
+python = "3.10"
+torch = "^1.12.1"
+numpy = "^1.23.2"
+scipy = "^1.9.0"
+hyperopt = "^0.2.7"
+pandas = "^1.4.3"
+PyYAML = "^6.0"
+tqdm = "^4.64.0"
+scikit-learn = "^1.1.2"
+colorlog = "^6.6.0"
+colorama = "^0.4.5"
+tensorboard = "^2.10.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
