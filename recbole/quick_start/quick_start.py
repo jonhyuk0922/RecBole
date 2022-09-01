@@ -130,4 +130,4 @@ def load_data_and_model(model_file):
     model.load_state_dict(checkpoint['state_dict'])
     model.load_other_parameter(checkpoint.get('other_parameter'))
 
-    # return config, model, dataset, train_data, valid_data, test_data
+    return config, model, dataset, train_data, valid_data, test_data
