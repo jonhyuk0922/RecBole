@@ -23,4 +23,4 @@ if __name__ == '__main__':
 
     config_file_list = args.config_files.strip().split(' ') if args.config_files else None
     # RecBole/recbole/quick_start/quick_start.py 에 있는 run_recbole 
-    run_recbole(model=args.model, dataset=args.dataset, config_dict={"data_path":"/Users/jo_nyuk/Desktop/Dev/Recbole/RecBole/dataset/"})
+    run_recbole(model=args.model, dataset=args.dataset, config_dict={"epochs":1,"topk":30,"valid_metric":"MRR@30"})

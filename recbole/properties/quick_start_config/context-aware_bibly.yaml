@@ -1,0 +1,5 @@
+threshold: {'target': 4}
+load_col: 
+    inter: ['user_id', 'item_id', 'target', 'timestamp']
+    user: ['user_id', 'age', 'gender', 'job'] 
+    item: ['item_id', 'book_name', 'category1','category2','category3']

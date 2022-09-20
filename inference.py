@@ -13,7 +13,7 @@ from recbole.utils.case_study import full_sort_topk
 interaction = pd.read_csv('/Users/jo_nyuk/Desktop/Dev/Recbole/RecBole/dataset/bibly/bibly.inter',sep='/t')
 # user_id:token |item_id:token |timestamp:float | target:float (다 0인 상태)
 
-model_path = '/Users/jo_nyuk/Desktop/Dev/Recbole/RecBole/saved/BPR-Aug-26-2022_14-40-01.pth'
+model_path = '/Users/jo_nyuk/Desktop/Dev/Recbole/RecBole/saved/CDAE-Sep-01-2022_17-28-52.pth'
 
 # model, dataset 불러오기
 config, model, dataset, train_data, valid_data, test_data = load_data_and_model(model_path)
@@ -62,7 +62,7 @@ result = []
 
 for idx in range(len(user_list)):
     user = user_list[idx]
-    items = pred_list[idx*10:(idx+1)*10]
+    items = pred_list[idx*30:(idx+1)*30]
     
     result.append((int(user_id2token[user]), [int(item_id2token[pred]) for pred in items]))
 

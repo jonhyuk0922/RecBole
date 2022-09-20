@@ -35,57 +35,40 @@ class Dataset:
     It provides many useful functions for data preprocessing, such as k-core data filtering and missing value
     imputation. Features are stored as :class:`pandas.DataFrame` inside :class:`~recbole.data.dataset.dataset.Dataset`.
     General and Context-aware Models can use this class.
-
     By calling method :meth:`~recbole.data.dataset.dataset.Dataset.build`, it will processing dataset into
     DataLoaders, according to :class:`~recbole.config.eval_setting.EvalSetting`.
-
     Args:
         config (Config): Global configuration object.
-
     Attributes:
         dataset_name (str): Name of this dataset.
-
         dataset_path (str): Local file path of this dataset.
-
         field2type (dict): Dict mapping feature name (str) to its type (:class:`~recbole.utils.enum_type.FeatureType`).
-
         field2source (dict): Dict mapping feature name (str) to its source
             (:class:`~recbole.utils.enum_type.FeatureSource`).
             Specially, if feature is loaded from Arg ``additional_feat_suffix``, its source has type str,
             which is the suffix of its local file (also the suffix written in Arg ``additional_feat_suffix``).
-
         field2id_token (dict): Dict mapping feature name (str) to a :class:`np.ndarray`, which stores the original token
             of this feature. For example, if ``test`` is token-like feature, ``token_a`` is remapped to 1, ``token_b``
             is remapped to 2. Then ``field2id_token['test'] = ['[PAD]', 'token_a', 'token_b']``. (Note that 0 is
             always PADDING for token-like features.)
-
         field2token_id (dict): Dict mapping feature name (str) to a dict, which stores the token remap table
             of this feature. For example, if ``test`` is token-like feature, ``token_a`` is remapped to 1, ``token_b``
             is remapped to 2. Then ``field2token_id['test'] = {'[PAD]': 0, 'token_a': 1, 'token_b': 2}``.
             (Note that 0 is always PADDING for token-like features.)
-
         field2seqlen (dict): Dict mapping feature name (str) to its sequence length (int).
             For sequence features, their length can be either set in config,
             or set to the max sequence length of this feature.
             For token and float features, their length is 1.
-
         uid_field (str or None): The same as ``config['USER_ID_FIELD']``.
-
         iid_field (str or None): The same as ``config['ITEM_ID_FIELD']``.
-
         label_field (str or None): The same as ``config['LABEL_FIELD']``.
-
         time_field (str or None): The same as ``config['TIME_FIELD']``.
-
         inter_feat (:class:`Interaction`): Internal data structure stores the interaction features.
             It's loaded from file ``.inter``.
-
         user_feat (:class:`Interaction` or None): Internal data structure stores the user features.
             It's loaded from file ``.user`` if existed.
-
         item_feat (:class:`Interaction` or None): Internal data structure stores the item features.
             It's loaded from file ``.item`` if existed.
-
         feat_name_list (list): A list contains all the features' name (:class:`str`), including additional features.
     """
 
@@ -139,7 +122,6 @@ class Dataset:
 
     def _data_processing(self):
         """Data preprocessing, including:
-
         - Data filtering
         - Remap ID
         - Missing value imputation
@@ -159,13 +141,11 @@ class Dataset:
 
     def _data_filtering(self):
         """Data filtering
-
         - Filter missing user_id or item_id
         - Remove duplicated user-item interaction
         - Value-based data filtering
         - Remove interaction by user or item
         - K-core data filtering
-
         Note:
             After filtering, feats(``DataFrame``) has non-continuous index,
             thus :meth:`~recbole.data.dataset.dataset.Dataset._reset_index` will reset the index of feats.
@@ -179,12 +159,9 @@ class Dataset:
 
     def _build_feat_name_list(self):
         """Feat list building.
-
         Any feat loaded by Dataset can be found in ``feat_name_list``
-
         Returns:
             built feature name list.
-
         Note:
             Subclasses can inherit this method to add new feat.
         """
@@ -234,10 +211,8 @@ class Dataset:
 
     def _load_data(self, token, dataset_path):
         """Load features.
-
         Firstly load interaction features, then user/item features optionally,
         finally load additional features if ``config['additional_feat_suffix']`` is set.
-
         Args:
             token (str): dataset name.
             dataset_path (str): path of dataset dir.
@@ -251,13 +226,10 @@ class Dataset:
 
     def _load_inter_feat(self, token, dataset_path):
         """Load interaction features.
-
         If ``config['benchmark_filename']`` is not set, load interaction features from ``.inter``.
-
         Otherwise, load interaction features from a file list, named ``dataset_name.xxx.inter``,
         where ``xxx`` if from ``config['benchmark_filename']``.
         After loading, ``self.file_size_list`` stores the length of each interaction file.
-
         Args:
             token (str): dataset name.
             dataset_path (str): path of dataset dir.
@@ -290,16 +262,13 @@ class Dataset:
 
     def _load_user_or_item_feat(self, token, dataset_path, source, field_name):
         """Load user/item features.
-
         Args:
             token (str): dataset name.
             dataset_path (str): path of dataset dir.
             source (FeatureSource): source of user/item feature.
             field_name (str): ``uid_field`` or ``iid_field``
-
         Returns:
             pandas.DataFrame: Loaded feature
-
         Note:
             ``user_id`` and ``item_id`` has source :obj:`~recbole.utils.enum_type.FeatureSource.USER_ID` and
             :obj:`~recbole.utils.enum_type.FeatureSource.ITEM_ID`
@@ -327,11 +296,9 @@ class Dataset:
 
     def _load_additional_feat(self, token, dataset_path):
         """Load additional features.
-
         For those additional features, e.g. pretrained entity embedding, user can set them
         as ``config['additional_feat_suffix']``, then they will be loaded and stored in
         :attr:`feat_name_list`. See :doc:`../user_guide/data/data_settings` for details.
-
         Args:
             token (str): dataset name.
             dataset_path (str): path of dataset dir.
@@ -351,10 +318,8 @@ class Dataset:
     def _get_load_and_unload_col(self, source):
         """Parsing ``config['load_col']`` and ``config['unload_col']`` according to source.
         See :doc:`../user_guide/config/data_settings` for detail arg setting.
-
         Args:
             source (FeatureSource): source of input file.
-
         Returns:
             tuple: tuple of parsed ``load_col`` and ``unload_col``, see :doc:`../user_guide/data/data_args` for details.
         """
@@ -384,16 +349,12 @@ class Dataset:
 
     def _load_feat(self, filepath, source):
         """Load features according to source into :class:`pandas.DataFrame`.
-
         Set features' properties, e.g. type, source and length.
-
         Args:
             filepath (str): path of input file.
             source (FeatureSource or str): source of input file.
-
         Returns:
             pandas.DataFrame: Loaded feature
-
         Note:
             For sequence features, ``seqlen`` will be loaded, but data in DataFrame will not be cut off.
             Their length is limited only after calling :meth:`~_dict_to_interaction` or
@@ -553,10 +514,8 @@ class Dataset:
 
     def _fill_nan(self):
         """Missing value imputation.
-
         For fields with type :obj:`~recbole.utils.enum_type.FeatureType.TOKEN`, missing value will be filled by
         ``[PAD]``, which indexed as 0.
-
         For fields with type :obj:`~recbole.utils.enum_type.FeatureType.FLOAT`, missing value will be filled by
         the average of original data.
         """
@@ -577,10 +536,8 @@ class Dataset:
     def _normalize(self):
         """Normalization if ``config['normalize_field']`` or ``config['normalize_all']`` is set.
         See :doc:`../user_guide/data/data_args` for detail arg setting.
-
         .. math::
             x' = \frac{x - x_{min}}{x_{max} - x_{min}}
-
         Note:
             Only float-like fields can be normalized.
         """
@@ -643,9 +600,7 @@ class Dataset:
 
     def _remove_duplication(self):
         """Remove duplications in inter_feat.
-
         If :attr:`self.config['rm_dup_inter']` is not ``None``, it will remove duplicated user-item interactions.
-
         Note:
             Before removing duplicated user-item interactions, if :attr:`time_field` existed, :attr:`inter_feat`
             will be sorted by :attr:`time_field` in ascending order.
@@ -669,11 +624,9 @@ class Dataset:
 
     def _filter_by_inter_num(self):
         """Filter by number of interaction.
-
         The interval of the number of interactions can be set, and only users/items whose number 
         of interactions is in the specified interval can be retained.
         See :doc:`../user_guide/data/data_args` for detail arg setting.
-
         Note:
             Lower bound of the interval is also called k-core filtering, which means this method 
             will filter loops until all the users and items has at least k interactions.
@@ -730,14 +683,12 @@ class Dataset:
 
     def _get_illegal_ids_by_inter_num(self, field, feat, inter_num, inter_interval=None):
         """Given inter feat, return illegal ids, whose inter num out of [min_num, max_num]
-
         Args:
             field (str): field name of user_id or item_id.
             feat (pandas.DataFrame): interaction feature.
             inter_num (Counter): interaction number counter.
             inter_interval (list, optional): the allowed interval(s) of the number of interactions. 
                                               Defaults to ``None``.
-
         Returns:
             set: illegal ids, whose inter num out of inter_intervals.
         """
@@ -761,10 +712,8 @@ class Dataset:
 
     def _parse_intervals_str(self, intervals_str):
         """Given string of intervals, return the list of endpoints tuple, where a tuple corresponds to an interval.
-
         Args:
             intervals_str (str): the string of intervals, such as "(0,1];[3,4)".
-
         Returns:
             list of endpoint tuple, such as [('(', 0, 1.0 , ']'), ('[', 3.0, 4.0 , ')')].
         """
@@ -789,7 +738,6 @@ class Dataset:
 
     def _within_intervals(self, num, intervals):
         """ return Ture if the num is in the intervals.
-
         Note:
             return true when the intervals is None.
         """
@@ -830,7 +778,6 @@ class Dataset:
 
     def _del_col(self, feat, field):
         """Delete columns
-
         Args:
             feat (pandas.DataFrame or Interaction): the feat contains field.
             field (str): field name to be dropped.
@@ -864,11 +811,9 @@ class Dataset:
 
     def _set_label_by_threshold(self):
         """Generate 0/1 labels according to value of features.
-
         According to ``config['threshold']``, those rows with value lower than threshold will
         be given negative label, while the other will be given positive label.
         See :doc:`../user_guide/data/data_args` for detail arg setting.
-
         Note:
             Key of ``config['threshold']`` if a field name.
             This field will be dropped after label generation.
@@ -893,20 +838,16 @@ class Dataset:
 
     def _get_remap_list(self, field_list):
         """Transfer set of fields in the same remapping space into remap list.
-
         If ``uid_field`` or ``iid_field`` in ``field_set``,
         field in :attr:`inter_feat` will be remapped firstly,
         then field in :attr:`user_feat` or :attr:`item_feat` will be remapped next, finally others.
-
         Args:
             field_list (numpy.ndarray): List of fields in the same remapping space.
-
         Returns:
             list:
             - feat (pandas.DataFrame)
             - field (str)
             - ftype (FeatureType)
-
             They will be concatenated in order, and remapped together.
         """
 
@@ -930,10 +871,8 @@ class Dataset:
 
     def _concat_remaped_tokens(self, remap_list):
         """Given ``remap_list``, concatenate values in order.
-
         Args:
             remap_list (list): See :meth:`_get_remap_list` for detail.
-
         Returns:
             tuple: tuple of:
             - tokens after concatenation.
@@ -951,7 +890,6 @@ class Dataset:
 
     def _remap(self, remap_list):
         """Remap tokens using :meth:`pandas.factorize`.
-
         Args:
             remap_list (list): See :meth:`_get_remap_list` for detail.
         """
@@ -983,10 +921,8 @@ class Dataset:
     def num(self, field):
         """Given ``field``, for token-like fields, return the number of different tokens after remapping,
         for float-like fields, return ``1``.
-
         Args:
             field (str): field name to get token number.
-
         Returns:
             int: The number of different tokens (``1`` if ``field`` is a float-like field).
         """
@@ -1001,11 +937,9 @@ class Dataset:
         """Given type and source of features, return all the field name of this type and source.
         If ``ftype == None``, the type of returned fields is not restricted.
         If ``source == None``, the source of returned fields is not restricted.
-
         Args:
             ftype (FeatureType, optional): Type of features. Defaults to ``None``.
             source (FeatureSource, optional): Source of features. Defaults to ``None``.
-
         Returns:
             list: List of field names.
         """
@@ -1023,7 +957,6 @@ class Dataset:
     def float_like_fields(self):
         """Get fields of type :obj:`~recbole.utils.enum_type.FeatureType.FLOAT` and
         :obj:`~recbole.utils.enum_type.FeatureType.FLOAT_SEQ`.
-
         Returns:
             list: List of field names.
         """
@@ -1033,7 +966,6 @@ class Dataset:
     def token_like_fields(self):
         """Get fields of type :obj:`~recbole.utils.enum_type.FeatureType.TOKEN` and
         :obj:`~recbole.utils.enum_type.FeatureType.TOKEN_SEQ`.
-
         Returns:
             list: List of field names.
         """
@@ -1043,7 +975,6 @@ class Dataset:
     def seq_fields(self):
         """Get fields of type :obj:`~recbole.utils.enum_type.FeatureType.TOKEN_SEQ` and
         :obj:`~recbole.utils.enum_type.FeatureType.FLOAT_SEQ`.
-
         Returns:
             list: List of field names.
         """
@@ -1053,7 +984,6 @@ class Dataset:
     def non_seq_fields(self):
         """Get fields of type :obj:`~recbole.utils.enum_type.FeatureType.TOKEN` and
         :obj:`~recbole.utils.enum_type.FeatureType.FLOAT`.
-
         Returns:
             list: List of field names.
         """
@@ -1061,7 +991,6 @@ class Dataset:
 
     def set_field_property(self, field, field_type, field_source, field_seqlen):
         """Set a new field's properties.
-
         Args:
             field (str): Name of the new field.
             field_type (FeatureType): Type of the new field.
@@ -1075,7 +1004,6 @@ class Dataset:
 
     def copy_field_property(self, dest_field, source_field):
         """Copy properties from ``dest_field`` towards ``source_field``.
-
         Args:
             dest_field (str): Destination field.
             source_field (str): Source field.
@@ -1104,11 +1032,9 @@ class Dataset:
 
     def token2id(self, field, tokens):
         """Map external tokens to internal ids.
-
         Args:
             field (str): Field of external tokens.
             tokens (str, list or numpy.ndarray): External tokens.
-
         Returns:
             int or numpy.ndarray: The internal ids of external tokens.
         """
@@ -1124,11 +1050,9 @@ class Dataset:
 
     def id2token(self, field, ids):
         """Map internal ids to external tokens.
-
         Args:
             field (str): Field of internal ids.
             ids (int, list, numpy.ndarray or torch.Tensor): Internal ids.
-
         Returns:
             str or numpy.ndarray: The external tokens of internal ids.
         """
@@ -1144,10 +1068,8 @@ class Dataset:
         """Given ``field``, if it is a token field in ``inter_feat``,
         return the counter containing the occurrences times in ``inter_feat`` of different tokens,
         for other cases, raise ValueError.
-
         Args:
             field (str): field name to get token counter.
-
         Returns:
             Counter: The counter of different tokens.
         """
@@ -1164,7 +1086,6 @@ class Dataset:
     @property
     def user_counter(self):
         """Get the counter containing the occurrences times in ``inter_feat`` of different users.
-
         Returns:
             Counter: The counter of different users.
         """
@@ -1174,7 +1095,6 @@ class Dataset:
     @property
     def item_counter(self):
         """Get the counter containing the occurrences times in ``inter_feat`` of different items.
-
         Returns:
             Counter: The counter of different items.
         """
@@ -1184,7 +1104,6 @@ class Dataset:
     @property
     def user_num(self):
         """Get the number of different tokens of ``self.uid_field``.
-
         Returns:
             int: Number of different tokens of ``self.uid_field``.
         """
@@ -1194,7 +1113,6 @@ class Dataset:
     @property
     def item_num(self):
         """Get the number of different tokens of ``self.iid_field``.
-
         Returns:
             int: Number of different tokens of ``self.iid_field``.
         """
@@ -1204,7 +1122,6 @@ class Dataset:
     @property
     def inter_num(self):
         """Get the number of interaction records.
-
         Returns:
             int: Number of interaction records.
         """
@@ -1213,7 +1130,6 @@ class Dataset:
     @property
     def avg_actions_of_users(self):
         """Get the average number of users' interaction records.
-
         Returns:
             numpy.float64: Average number of users' interaction records.
         """
@@ -1225,7 +1141,6 @@ class Dataset:
     @property
     def avg_actions_of_items(self):
         """Get the average number of items' interaction records.
-
         Returns:
             numpy.float64: Average number of items' interaction records.
         """
@@ -1237,7 +1152,6 @@ class Dataset:
     @property
     def sparsity(self):
         """Get the sparsity of this dataset.
-
         Returns:
             float: Sparsity of this dataset.
         """
@@ -1245,7 +1159,6 @@ class Dataset:
 
     def _check_field(self, *field_names):
         """Given a name of attribute, check if it's exist.
-
         Args:
             *field_names (str): Fields to be checked.
         """
@@ -1255,10 +1168,8 @@ class Dataset:
 
     def join(self, df):
         """Given interaction feature, join user/item feature into it.
-
         Args:
             df (Interaction): Interaction feature to be joint.
-
         Returns:
             Interaction: Interaction feature after joining operation.
         """
@@ -1299,10 +1210,8 @@ class Dataset:
     def copy(self, new_inter_feat):
         """Given a new interaction feature, return a new :class:`Dataset` object,
         whose interaction feature is updated with ``new_inter_feat``, and all the other attributes the same.
-
         Args:
             new_inter_feat (Interaction): The new interaction feature need to be updated.
-
         Returns:
             :class:`~Dataset`: the new :class:`~Dataset` object, whose interaction feature has been updated.
         """
@@ -1338,13 +1247,10 @@ class Dataset:
 
     def _calcu_split_ids(self, tot, ratios):
         """Given split ratios, and total number, calculate the number of each part after splitting.
-
         Other than the first one, each part is rounded down.
-
         Args:
             tot (int): Total number.
             ratios (list): List of split ratios. No need to be normalized.
-
         Returns:
             list: Number of each part after splitting.
         """
@@ -1361,15 +1267,12 @@ class Dataset:
 
     def split_by_ratio(self, ratios, group_by=None):
         """Split interaction records by ratios.
-
         Args:
             ratios (list): List of split ratios. No need to be normalized.
             group_by (str, optional): Field name that interaction records should grouped by before splitting.
                 Defaults to ``None``
-
         Returns:
             list: List of :class:`~Dataset`, whose interaction features has been split.
-
         Note:
             Other than the first one, each part is rounded down.
         """
@@ -1397,11 +1300,9 @@ class Dataset:
 
     def _split_index_by_leave_one_out(self, grouped_index, leave_one_num):
         """Split indexes by strategy leave one out.
-
         Args:
             grouped_index (list of list of int): Index to be split.
             leave_one_num (int): Number of parts whose length is expected to be ``1``.
-
         Returns:
             list: List of index that has been split.
         """
@@ -1419,12 +1320,10 @@ class Dataset:
 
     def leave_one_out(self, group_by, leave_one_mode):
         """Split interaction records by leave one out strategy.
-
         Args:
             group_by (str): Field name that interaction records should grouped by before splitting.
             leave_one_mode (str): The way to leave one out. It can only take three values:
                 'valid_and_test', 'valid_only' and 'test_only'.
-
         Returns:
             list: List of :class:`~Dataset`, whose interaction features has been split.
         """
@@ -1456,7 +1355,6 @@ class Dataset:
 
     def sort(self, by, ascending=True):
         """Sort the interaction records inplace.
-
         Args:
             by (str or list of str): Field that as the key in the sorting process.
             ascending (bool or list of bool, optional): Results are ascending if ``True``, otherwise descending.
@@ -1467,7 +1365,6 @@ class Dataset:
     def build(self):
         """Processing dataset according to evaluation setting, including Group, Order and Split.
         See :class:`~recbole.config.eval_setting.EvalSetting` for details.
-
         Returns:
             list: List of built :class:`Dataset`.
         """
@@ -1548,14 +1445,10 @@ class Dataset:
 
     def _create_sparse_matrix(self, df_feat, source_field, target_field, form='coo', value_field=None):
         """Get sparse matrix that describe relations between two fields.
-
         Source and target should be token-like fields.
-
         Sparse matrix has shape (``self.num(source_field)``, ``self.num(target_field)``).
-
         For a row of <src, tgt>, ``matrix[src, tgt] = 1`` if ``value_field`` is ``None``,
         else ``matrix[src, tgt] = df_feat[value_field][src, tgt]``.
-
         Args:
             df_feat (Interaction): Feature where src and tgt exist.
             source_field (str): Source field
@@ -1563,7 +1456,6 @@ class Dataset:
             form (str, optional): Sparse matrix format. Defaults to ``coo``.
             value_field (str, optional): Data of sparse matrix, which should exist in ``df_feat``.
                 Defaults to ``None``.
-
         Returns:
             scipy.sparse: Sparse matrix in form ``coo`` or ``csr``.
         """
@@ -1586,14 +1478,10 @@ class Dataset:
 
     def _create_graph(self, tensor_feat, source_field, target_field, form='dgl', value_field=None):
         """Get graph that describe relations between two fields.
-
         Source and target should be token-like fields.
-
         For an edge of <src, tgt>, ``graph[src, tgt] = 1`` if ``value_field`` is ``None``,
         else ``graph[src, tgt] = df_feat[value_field][src, tgt]``.
-
         Currently, we support graph in `DGL`_ and `PyG`_.
-
         Args:
             tensor_feat (Interaction): Feature where src and tgt exist.
             source_field (str): Source field
@@ -1601,13 +1489,10 @@ class Dataset:
             form (str, optional): Library of graph data structure. Defaults to ``dgl``.
             value_field (str, optional): edge attributes of graph, which should exist in ``df_feat``.
                 Defaults to ``None``.
-
         Returns:
             Graph of relations.
-
         .. _DGL:
             https://www.dgl.ai/
-
         .. _PyG:
             https://github.com/rusty1s/pytorch_geometric
         """
@@ -1633,17 +1518,13 @@ class Dataset:
 
     def inter_matrix(self, form='coo', value_field=None):
         """Get sparse matrix that describe interactions between user_id and item_id.
-
         Sparse matrix has shape (user_num, item_num).
-
         For a row of <src, tgt>, ``matrix[src, tgt] = 1`` if ``value_field`` is ``None``,
         else ``matrix[src, tgt] = self.inter_feat[src, tgt]``.
-
         Args:
             form (str, optional): Sparse matrix format. Defaults to ``coo``.
             value_field (str, optional): Data of sparse matrix, which should exist in ``df_feat``.
                 Defaults to ``None``.
-
         Returns:
             scipy.sparse: Sparse matrix in form ``coo`` or ``csr``.
         """
@@ -1653,21 +1534,15 @@ class Dataset:
 
     def _history_matrix(self, row, value_field=None):
         """Get dense matrix describe user/item's history interaction records.
-
         ``history_matrix[i]`` represents ``i``'s history interacted item_id.
-
         ``history_value[i]`` represents ``i``'s history interaction records' values.
             ``0`` if ``value_field = None``.
-
         ``history_len[i]`` represents number of ``i``'s history interaction records.
-
         ``0`` is used as padding.
-
         Args:
             row (str): ``user`` or ``item``.
             value_field (str, optional): Data of matrix, which should exist in ``self.inter_feat``.
                 Defaults to ``None``.
-
         Returns:
             tuple:
                 - History matrix (torch.Tensor): ``history_matrix`` described above.
@@ -1714,20 +1589,14 @@ class Dataset:
 
     def history_item_matrix(self, value_field=None):
         """Get dense matrix describe user's history interaction records.
-
         ``history_matrix[i]`` represents user ``i``'s history interacted item_id.
-
         ``history_value[i]`` represents user ``i``'s history interaction records' values,
         ``0`` if ``value_field = None``.
-
         ``history_len[i]`` represents number of user ``i``'s history interaction records.
-
         ``0`` is used as padding.
-
         Args:
             value_field (str, optional): Data of matrix, which should exist in ``self.inter_feat``.
                 Defaults to ``None``.
-
         Returns:
             tuple:
                 - History matrix (torch.Tensor): ``history_matrix`` described above.
@@ -1738,20 +1607,14 @@ class Dataset:
 
     def history_user_matrix(self, value_field=None):
         """Get dense matrix describe item's history interaction records.
-
         ``history_matrix[i]`` represents item ``i``'s history interacted item_id.
-
         ``history_value[i]`` represents item ``i``'s history interaction records' values,
         ``0`` if ``value_field = None``.
-
         ``history_len[i]`` represents number of item ``i``'s history interaction records.
-
         ``0`` is used as padding.
-
         Args:
             value_field (str, optional): Data of matrix, which should exist in ``self.inter_feat``.
                 Defaults to ``None``.
-
         Returns:
             tuple:
                 - History matrix (torch.Tensor): ``history_matrix`` described above.
@@ -1762,12 +1625,9 @@ class Dataset:
 
     def get_preload_weight(self, field):
         """Get preloaded weight matrix, whose rows are sorted by token ids.
-
         ``0`` is used as padding.
-
         Args:
             field (str): preloaded feature field name.
-
         Returns:
             numpy.ndarray: preloaded weight matrix. See :doc:`../user_guide/config/data_settings` for details.
         """
@@ -1777,10 +1637,8 @@ class Dataset:
 
     def _dataframe_to_interaction(self, data):
         """Convert :class:`pandas.DataFrame` to :class:`~recbole.data.interaction.Interaction`.
-
         Args:
             data (pandas.DataFrame): data to be converted.
-
         Returns:
             :class:`~recbole.data.interaction.Interaction`: Converted data.
         """

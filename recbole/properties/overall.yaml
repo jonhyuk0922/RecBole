@@ -15,14 +15,14 @@ log_wandb: False
 wandb_project: 'recbole'
 
 # training settings
-epochs: 300
-train_batch_size: 2048
+epochs: 5 # 300
+train_batch_size: 512 #2048
 learner: adam
 learning_rate: 0.001
 neg_sampling:
   uniform: 1
 eval_step: 1
-stopping_step: 10
+stopping_step: 5 #10
 clip_grad_norm: ~
 # clip_grad_norm:  {'max_norm': 5, 'norm_type': 2}
 weight_decay: 0.0
@@ -33,12 +33,12 @@ require_pow: False
 eval_args: 
   split: {'RS':[0.8,0.1,0.1]}
   group_by: user
-  order: RO
-  mode: full
+  order: RO #RO
+  mode: full # labeled
 repeatable: False
 metrics: ["Recall","MRR","NDCG","Hit","Precision"]
 topk: [10]
 valid_metric: MRR@10
 valid_metric_bigger: True
-eval_batch_size: 4096
+eval_batch_size: 256 # 4096
 metric_decimal_place: 4
